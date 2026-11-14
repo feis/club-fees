@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>羽球社分帳</title>
+<style>
+  :root {
+    --bg: #f5f5f7;
+    --card: #ffffff;
+    --primary: #4a90d9;
+    --primary-dark: #357abd;
+    --danger: #e74c3c;
+    --text: #2c3e50;
+    --text-light: #7f8c8d;
+    --border: #e0e0e0;
+    --success: #27ae60;
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 20px 16px 40px;
+  }
+
+  header {
+    text-align: center;
+    padding: 32px 0 24px;
+  }
+
+  header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  header p {
+    color: var(--text-light);
+    font-size: 14px;
+    margin-top: 4px;
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+
+  .card-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title .icon {
+    font-size: 20px;
+  }
+
+  .form-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .form-group label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-light);
+  }
+
+  input[type="number"],
+  input[type="text"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 15px;
+    color: var(--text);
+    transition: border-color 0.2s;
+    outline: none;
+    font-family: inherit;
+  }
+
+  input:focus {
+    border-color: var(--primary);
+  }
+
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .checkbox-row:last-child {
+    border-bottom: none;
+  }
+
+  .checkbox-row input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .checkbox-row label {
+    font-size: 15px;
+    cursor: pointer;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .badge-new {
+    background: #fff3cd;
+    color: #856404;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    width: 100%;
+  }
+
+  .btn-primary {
+    background: var(--primary);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: var(--primary-dark);
+  }
+
+  .btn-danger {
+    background: transparent;
+    color: var(--danger);
+    font-size: 13px;
+    padding: 6px 12px;
+    width: auto;
+  }
+
+  .btn-danger:hover {
+    background: #fde8e8;
+  }
+
+  .btn-sm {
+    padding: 8px 16px;
+    font-size: 13px;
+    width: auto;
+  }
+
+  /* Result section */
+  .result-section {
+    display: none;
+  }
+
+  .result-section.show {
+    display: block;
+  }
+
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .result-row:last-child {
+    border-bottom: none;
+  }
+
+  .result-name {
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .result-amount {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--primary);
+  }
+
+  .result-amount.free {
+    color: var(--success);
+    font-size: 15px;
+  }
+
+  .summary-box {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: var(--radius);
+    padding: 20px;
+    color: white;
+    margin-bottom: 16px;
+  }
+
+  .summary-box h3 {
+    font-size: 14px;
+    opacity: 0.85;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .summary-item {
+    background: rgba(255,255,255,0.15);
+    border-radius: 8px;
+    padding: 12px;
+  }
+
+  .summary-item .label {
+    font-size: 12px;
+    opacity: 0.8;
+  }
+
+  .summary-item .value {
+    font-size: 20px;
+    font-weight: 700;
+    margin-top: 2px;
+  }
+
+  /* History */
+  .history-item {
+    border-bottom: 1px solid var(--border);
+    padding: 14px 0;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .history-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .history-item:hover {
+    opacity: 0.7;
+  }
+
+  .history-date {
+    font-size: 13px;
+    color: var(--text-light);
+    margin-bottom: 4px;
+  }
+
+  .history-summary {
+    font-size: 14px;
+    color: var(--text);
+  }
+
+  .history-summary span {
+    font-weight: 600;
+    color: var(--primary);
+  }
+
+  /* Detail modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 100;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .modal-overlay.show {
+    display: flex;
+  }
+
+  .modal {
+    background: white;
+    border-radius: var(--radius) var(--radius) 0 0;
+    width: 100%;
+    max-width: 640px;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 24px 20px 40px;
+    animation: slideUp 0.3s ease;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .modal-header h3 {
+    font-size: 18px;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--text-light);
+    padding: 4px;
+  }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+  }
+
+  .detail-row:last-child {
+    border-bottom: none;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-light);
+  }
+
+  .empty-state .icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+  }
+
+  .empty-state p {
+    font-size: 14px;
+  }
+
+  .tab-bar {
+    display: flex;
+    gap: 0;
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 4px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+
+  .tab {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--text-light);
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+
+  .tab.active {
+    background: var(--primary);
+    color: white;
+  }
+
+  .tab-content {
+    display: none;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 16px 0;
+  }
+
+  .hint {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 4px;
+  }
+
+  .add-member-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .add-member-row input {
+    flex: 1;
+  }
+
+  .add-member-row .btn {
+    width: auto;
+    padding: 10px 18px;
+  }
+
+  .remove-btn {
+    background: none;
+    border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px;
+    line-height: 1;
+    opacity: 0.4;
+    transition: opacity 0.2s;
+  }
+
+  .remove-btn:hover {
+    opacity: 1;
+    color: var(--danger);
+  }
+
+  .member-count {
+    font-size: 13px;
+    color: var(--text-light);
+    margin-left: auto;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>🏸 羽球社分帳</h1>
+    <p>輸入總費用，自動算每個人要付多少</p>
+  </header>
+
+  <!-- Tabs -->
+  <div class="tab-bar">
+    <button class="tab active" data-tab="calc">💰 本次分帳</button>
+    <button class="tab" data-tab="history">📋 歷史紀錄</button>
+  </div>
+
+  <!-- Calc Tab -->
+  <div class="tab-content active" id="tab-calc">
+    <!-- Settings Card -->
+    <div class="card">
+      <div class="card-title"><span class="icon">⚙️</span> 活動設定</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>場地費（元）</label>
+          <input type="number" id="courtFee" placeholder="例如 3000" min="0" step="100">
+        </div>
+        <div class="form-group">
+          <label>羽毛球費（元）</label>
+          <input type="number" id="shuttleFee" placeholder="例如 200" min="0" step="50">
+        </div>
+      </div>
+    </div>
+
+    <!-- Members Card -->
+    <div class="card">
+      <div class="card-title">
+        <span class="icon">👥</span> 報名名單
+        <span class="member-count" id="memberCount"></span>
+      </div>
+      <div id="memberList"></div>
+      <div class="add-member-row">
+        <input type="text" id="newMemberName" placeholder="輸入姓名" maxlength="20">
+        <button class="btn btn-primary btn-sm" onclick="addMember()">＋ 加入</button>
+      </div>
+      <p class="hint">💡 勾選「新人」當次免費</p>
+    </div>
+
+    <!-- Calculate Button -->
+    <button class="btn btn-primary" onclick="calculate()" style="margin-top: 4px;">
+      🧮 開始分帳
+    </button>
+
+    <!-- Results -->
+    <div class="result-section" id="resultSection">
+      <div class="summary-box" id="summaryBox"></div>
+      <div class="card">
+        <div class="card-title"><span class="icon">📊</span> 分帳明細</div>
+        <div id="resultList"></div>
+      </div>
+      <button class="btn btn-primary" onclick="saveRecord()" style="margin-top: 16px;">
+        💾 儲存這次紀錄
+      </button>
+    </div>
+  </div>
+
+  <!-- History Tab -->
+  <div class="tab-content" id="tab-history">
+    <div id="historyList"></div>
+  </div>
+</div>
+
+<!-- Detail Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 id="modalTitle">活動明細</h3>
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+    </div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+// ===== Data Layer =====
+const STORAGE_KEY = 'badminton_split_records';
+const MEMBERS_KEY = 'badminton_split_members';
+
+function getRecords() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+  } catch { return []; }
+}
+
+function saveRecords(records) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+}
+
+function getCurrentMembers() {
+  try {
+    return JSON.parse(localStorage.getItem(MEMBERS_KEY)) || [];
+  } catch { return []; }
+}
+
+function saveCurrentMembers(members) {
+  localStorage.setItem(MEMBERS_KEY, JSON.stringify(members));
+}
+
+// ===== Tab Switching =====
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+    if (tab.dataset.tab === 'history') renderHistory();
+  });
+});
+
+// ===== Member Management =====
+function addMember() {
+  const input = document.getElementById('newMemberName');
+  const name = input.value.trim();
+  if (!name) return;
+
+  const members = getCurrentMembers();
+  if (members.find(m => m.name === name)) {
+    alert('此人已在名單中');
+    return;
+  }
+
+  members.push({ name, isNew: false });
+  saveCurrentMembers(members);
+  input.value = '';
+  renderMembers();
+}
+
+document.getElementById('newMemberName').addEventListener('keydown', e => {
+  if (e.key === 'Enter') addMember();
+});
+
+function removeMember(index) {
+  const members = getCurrentMembers();
+  members.splice(index, 1);
+  saveCurrentMembers(members);
+  renderMembers();
+}
+
+function toggleNew(index) {
+  const members = getCurrentMembers();
+  members[index].isNew = !members[index].isNew;
+  saveCurrentMembers(members);
+  renderMembers();
+}
+
+function renderMembers() {
+  const members = getCurrentMembers();
+  const container = document.getElementById('memberList');
+  const countEl = document.getElementById('memberCount');
+
+  if (members.length === 0) {
+    container.innerHTML = '<div class="empty-state" style="padding:20px"><p>尚無報名人員</p></div>';
+    countEl.textContent = '';
+    return;
+  }
+
+  countEl.textContent = `${members.length} 人`;
+
+  container.innerHTML = members.map((m, i) => `
+    <div class="checkbox-row">
+      <input type="checkbox" id="new-${i}" ${m.isNew ? 'checked' : ''} onchange="toggleNew(${i})">
+      <label for="new-${i}">
+        ${escHtml(m.name)}
+        ${m.isNew ? '<span class="badge-new">新人免費</span>' : ''}
+      </label>
+      <button class="remove-btn" onclick="removeMember(${i})" title="移除">✕</button>
+    </div>
+  `).join('');
+}
+
+function escHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ===== Calculation =====
+let lastResult = null;
+
+function calculate() {
+  const courtFee = parseFloat(document.getElementById('courtFee').value) || 0;
+  const shuttleFee = parseFloat(document.getElementById('shuttleFee').value) || 0;
+  const members = getCurrentMembers();
+
+  if (members.length === 0) {
+    alert('請先加入報名人員');
+    return;
+  }
+
+  const payingMembers = members.filter(m => !m.isNew);
+  if (payingMembers.length === 0) {
+    alert('至少要有 1 個人付費才能分帳');
+    return;
+  }
+
+  const totalFee = courtFee + shuttleFee;
+  const perPerson = Math.ceil(totalFee / payingMembers.length);
+  const exactPerPerson = totalFee / payingMembers.length;
+
+  // Handle rounding: some pay one more, some less
+  const remainder = totalFee - (perPerson * (payingMembers.length - 1));
+  const adjustedAmounts = payingMembers.map((m, i) => {
+    if (i < payingMembers.length - 1) return perPerson;
+    return remainder;
+  });
+
+  lastResult = {
+    courtFee,
+    shuttleFee,
+    totalFee,
+    members: members.map(m => ({
+      name: m.name,
+      isNew: m.isNew,
+      amount: m.isNew ? 0 : adjustedAmounts[members.indexOf(m) - members.findIndex(mm => !mm.isNew)]
+    })),
+    payingCount: payingMembers.length,
+    freeCount: members.filter(m => m.isNew).length,
+    perPersonCourt: Math.ceil(courtFee / payingMembers.length),
+    perPersonShuttle: Math.ceil(shuttleFee / payingMembers.length),
+    exactPerPerson
+  };
+
+  // Fix amounts - need to properly map
+  const payers = members.filter(m => !m.isNew);
+  const payerAmounts = [];
+  for (let i = 0; i < payers.length; i++) {
+    if (i < payers.length - 1) payerAmounts.push(perPerson);
+    else payerAmounts.push(totalFee - perPerson * (payers.length - 1));
+  }
+
+  lastResult.memberAmounts = members.map(m => {
+    if (m.isNew) return 0;
+    const idx = payers.indexOf(m);
+    return payerAmounts[idx];
+  });
+
+  renderResults();
+}
+
+function renderResults() {
+  const r = lastResult;
+  const section = document.getElementById('resultSection');
+  section.classList.add('show');
+
+  // Summary
+  document.getElementById('summaryBox').innerHTML = `
+    <h3>本次活動總費用</h3>
+    <div class="summary-grid">
+      <div class="summary-item">
+        <div class="label">場地費 / 人</div>
+        <div class="value">NT$ ${r.courtFee.toLocaleString()}</div>
+      </div>
+      <div class="summary-item">
+        <div class="label">羽毛球費 / 人</div>
+        <div class="value">NT$ ${r.shuttleFee.toLocaleString()}</div>
+      </div>
+      <div class="summary-item">
+        <div class="label">付費人數</div>
+        <div class="value">${r.payingCount} 人</div>
+      </div>
+      <div class="summary-item">
+        <div class="label">新人免費</div>
+        <div class="value">${r.freeCount} 人</div>
+      </div>
+    </div>
+  `;
+
+  // Detail list
+  const members = getCurrentMembers();
+  document.getElementById('resultList').innerHTML = members.map((m, i) => {
+    const amount = r.memberAmounts[i];
+    if (m.isNew) {
+      return `
+        <div class="result-row">
+          <span class="result-name">${escHtml(m.name)} <span class="badge-new">新人免費</span></span>
+          <span class="result-amount free">免費 ✓</span>
+        </div>
+      `;
+    }
+    return `
+      <div class="result-row">
+        <span class="result-name">${escHtml(m.name)}</span>
+        <span class="result-amount">NT$ ${amount.toLocaleString()}</span>
+      </div>
+    `;
+  }).join('');
+
+  // Scroll to results
+  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ===== Save Record =====
+function saveRecord() {
+  if (!lastResult) return;
+
+  const members = getCurrentMembers();
+  const record = {
+    id: Date.now(),
+    date: new Date().toISOString(),
+    courtFee: lastResult.courtFee,
+    shuttleFee: lastResult.shuttleFee,
+    totalFee: lastResult.totalFee,
+    payingCount: lastResult.payingCount,
+    freeCount: lastResult.freeCount,
+    members: members.map((m, i) => ({
+      name: m.name,
+      isNew: m.isNew,
+      amount: lastResult.memberAmounts[i]
+    }))
+  };
+
+  const records = getRecords();
+  records.unshift(record);
+  saveRecords(records);
+
+  alert('紀錄已儲存！可以前往「歷史紀錄」查看');
+}
+
+// ===== History =====
+function renderHistory() {
+  const records = getRecords();
+  const container = document.getElementById('historyList');
+
+  if (records.length === 0) {
+    container.innerHTML = `
+      <div class="card">
+        <div class="empty-state">
+          <div class="icon">📭</div>
+          <p>尚無歷史紀錄<br>完成一次分帳後點擊「儲存這次紀錄」即可</p>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = records.map((r, idx) => {
+    const date = new Date(r.date);
+    const dateStr = `${date.getFullYear()}/${String(date.getMonth()+1).padStart(2,'0')}/${String(date.getDate()).padStart(2,'0')} ${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
+    return `
+      <div class="card" style="cursor:pointer;padding:16px 20px;" onclick="showDetail(${idx})">
+        <div class="history-date">${dateStr}</div>
+        <div class="history-summary">
+          場地 NT$${r.courtFee.toLocaleString()} · 球費 NT$${r.shuttleFee.toLocaleString()}
+          · 共 <span>NT$${r.totalFee.toLocaleString()}</span>（${r.payingCount}人付費${r.freeCount > 0 ? '，' + r.freeCount + '人免費' : ''}）
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function showDetail(idx) {
+  const records = getRecords();
+  const r = records[idx];
+  if (!r) return;
+
+  const date = new Date(r.date);
+  const dateStr = `${date.getFullYear()}/${String(date.getMonth()+1).padStart(2,'0')}/${String(date.getDate()).padStart(2,'0')} ${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
+
+  document.getElementById('modalTitle').textContent = `活動明細 — ${dateStr}`;
+  document.getElementById('modalBody').innerHTML = `
+    <div class="detail-row">
+      <span>場地費</span>
+      <strong>NT$ ${r.courtFee.toLocaleString()}</strong>
+    </div>
+    <div class="detail-row">
+      <span>羽毛球費</span>
+      <strong>NT$ ${r.shuttleFee.toLocaleString()}</strong>
+    </div>
+    <div class="detail-row">
+      <span>總費用</span>
+      <strong>NT$ ${r.totalFee.toLocaleString()}</strong>
+    </div>
+    <div class="detail-row">
+      <span>付費人數</span>
+      <strong>${r.payingCount} 人</strong>
+    </div>
+    ${r.freeCount > 0 ? `
+    <div class="detail-row">
+      <span>新人免費</span>
+      <strong>${r.freeCount} 人</strong>
+    </div>` : ''}
+    <div class="divider"></div>
+    <div style="font-size:14px;font-weight:600;margin-bottom:8px;">每人付費明細</div>
+    ${r.members.map(m => `
+      <div class="detail-row">
+        <span>${escHtml(m.name)}${m.isNew ? ' <span class="badge-new">新人</span>' : ''}</span>
+        <strong style="color:${m.amount === 0 ? 'var(--success)' : 'var(--primary)'}">
+          ${m.amount === 0 ? '免費' : 'NT$ ' + m.amount.toLocaleString()}
+        </strong>
+      </div>
+    `).join('')}
+    <div class="divider"></div>
+    <button class="btn btn-danger" onclick="deleteRecord(${idx})" style="width:100%;">🗑️ 刪除這筆紀錄</button>
+  `;
+
+  document.getElementById('modalOverlay').classList.add('show');
+}
+
+function closeModal(e) {
+  if (e && e.target !== e.currentTarget) return;
+  document.getElementById('modalOverlay').classList.remove('show');
+}
+
+function deleteRecord(idx) {
+  if (!confirm('確定要刪除這筆紀錄嗎？')) return;
+  const records = getRecords();
+  records.splice(idx, 1);
+  saveRecords(records);
+  closeModal();
+  renderHistory();
+}
+
+// ===== Init =====
+renderMembers();
+</script>
+
+</body>
+</html>
