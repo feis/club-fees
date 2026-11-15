@@ -678,12 +678,22 @@
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
+<script type="importmap">
+{
+  "imports": {
+    "@supabase/supabase-js": "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/index.esm.mjs"
+  }
+}
+</script>
+<script type="module">
 // ===== Supabase Config =====
 const SUPABASE_URL = 'https://rycbqfodgauneccmcprr.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5Y2JxZm9kZ2F1bmVjY21jcHJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ3MTc1MDEsImV4cCI6MjExMDI5MzUwMX0.JdxIyMfcOshd-rJP1nimQkF1y_tMpaW1s9Nn9LbKKyY';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const { createClient } = await import('@supabase/supabase-js');
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// Make supabase available globally for other functions
+window.__supabase__ = supabase;
 
 // ===== Auth State =====
 let currentUser = null;
