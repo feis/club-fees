@@ -683,13 +683,13 @@
 // ===== Supabase Config =====
 const SUPABASE_URL = 'https://rycbqfodgauneccmcprr.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5Y2JxZm9kZ2F1bmVjY21jcHJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ3MTc1MDEsImV4cCI6MjExMDI5MzUwMX0.JdxIyMfcOshd-rJP1nimQkF1y_tMpaW1s9Nn9LbKKyY';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ===== Auth State =====
 let currentUser = null;
 
 async function initAuth() {
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { session } } = await client.auth.getSession();
   if (session) {
     currentUser = session.user;
     showApp();
@@ -697,7 +697,7 @@ async function initAuth() {
     showLogin();
   }
 
-  supabase.auth.onAuthStateChange((event, session) => {
+  client.auth.onAuthStateChange((event, session) => {
     if (session) {
       currentUser = session.user;
       showApp();
@@ -738,7 +738,7 @@ async function handleLogin() {
   btn.disabled = true;
   btn.innerHTML = '<span class="loading-spinner"></span> 登入中...';
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { error } = await client.auth.signInWithPassword({ email, password });
 
   btn.disabled = false;
   btn.textContent = '登入';
@@ -750,7 +750,7 @@ async function handleLogin() {
 }
 
 async function handleLogout() {
-  await supabase.auth.signOut();
+  await client.auth.signOut();
 }
 
 // Enter key login
@@ -765,7 +765,7 @@ document.getElementById('loginEmail').addEventListener('keydown', e => {
 const MEMBERS_KEY = 'badminton_split_members';
 
 async function loadHistory() {
-  const { data, error } = await supabase
+  const { data, error } = await client
     .from('ledger')
     .select('*')
     .order('created_at', { ascending: false });
@@ -796,7 +796,7 @@ async function saveRecord() {
     }))
   };
 
-  const { error } = await supabase.from('ledger').insert([record]);
+  const { error } = await client.from('ledger').insert([record]);
 
   if (error) {
     alert('儲存失敗：' + error.message);
@@ -809,7 +809,7 @@ async function saveRecord() {
 }
 
 async function deleteRecordById(id) {
-  const { error } = await supabase.from('ledger').delete().eq('id', id);
+  const { error } = await client.from('ledger').delete().eq('id', id);
 
   if (error) {
     alert('刪除失敗：' + error.message);
